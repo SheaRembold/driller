@@ -25,9 +25,23 @@ public class Player : MonoBehaviour
         }
     }
     public GameObject drill;
+    public GUIStuff stuff;
+    public MapManager map;
+
+    Vector3 startPos;
 
     void Start()
     {
+        hasDrill = index == 0;
+        startPos = transform.position;
+    }
+
+    public void reset()
+    {
+        speed = 0;
+        rot = 0;
+        transform.position = startPos;
+        transform.rotation = Quaternion.Euler(0, 0, rot);
     }
 
     void Update()
@@ -66,7 +80,11 @@ public class Player : MonoBehaviour
     {
         if (col.gameObject.tag == "Block" && hasDrill)
         {
-            GameObject.Destroy(col.gameObject);
+            map.Pool.Despawn(col.gameObject.transform);
+        }
+        else if (col.gameObject.tag == "Player")
+        {
+            stuff.Winner(index);
         }
     }
 }
