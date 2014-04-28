@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class MapManager : MonoBehaviour
 {
     public Transform Block;
+    public Transform Explosion;
 
     bool[][] grid = null;
     public int gridWidthWorld;
@@ -131,5 +132,11 @@ public class MapManager : MonoBehaviour
         player.reset();
         player2.reset();
         generateWorldInit();
+    }
+
+    public void destroyBlock(Transform block)
+    {
+        Pool.Despawn(block);
+        Pool.Spawn(Explosion, block.transform.position, Quaternion.identity);
     }
 }

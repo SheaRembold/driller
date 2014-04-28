@@ -109,7 +109,7 @@ public class Player : MonoBehaviour
     {
         if (col.gameObject.tag == "Block" && hasDrill)
         {
-            map.Pool.Despawn(col.gameObject.transform);
+            map.destroyBlock(col.gameObject.transform);
         }
         else if (col.gameObject.tag == "Player" && !hasDrill)
         {

@@ -5,10 +5,15 @@ using PathologicalGames;
 public class PoolsManager : MonoBehaviour
 {
     public Transform[] prefabs;
+    public int[] counts;
     private SpawnPool pool;
+
+    public static PoolsManager Instance;
 
     void Start()
     {
+        Instance = this;
+
         pool = PoolManager.Pools.Create("MapPool");
 
         pool.group.localPosition = new Vector3(0, 0, 0);
@@ -17,9 +22,9 @@ public class PoolsManager : MonoBehaviour
         for (int i = 0; i < prefabs.Length; i++)
         {
             PrefabPool prefabPool = new PrefabPool(prefabs[i]);
-            prefabPool.preloadAmount = 1000;
+            prefabPool.preloadAmount = counts[i];
             prefabPool.cullDespawned = true;
-            prefabPool.cullAbove = 1000;
+            prefabPool.cullAbove = counts[i];
             prefabPool.cullDelay = 2;
             prefabPool.limitInstances = false;
 
