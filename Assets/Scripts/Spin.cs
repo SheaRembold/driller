@@ -1,15 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Spin : MonoBehaviour {
+public class Spin : MonoBehaviour
+{
+    public float speed;
+    float rot;
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    void Start()
+    {
+        rot = transform.localRotation.eulerAngles.z;
+    }
+
+    void Update()
+    {
+        rot += speed * Time.deltaTime;
+        transform.localRotation = Quaternion.Euler(0, 0, rot);
+    }
 }

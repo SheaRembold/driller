@@ -18,8 +18,6 @@ public class MapManager : MonoBehaviour
     public Player player;
     public Player player2;
 
-    Vector3[] startPos;
-
     void Start()
     {
         if (grid == null)
@@ -32,10 +30,6 @@ public class MapManager : MonoBehaviour
         }
 
         generateWorldInit();
-
-        startPos = new Vector3[2];
-        startPos[0] = player.transform.position;
-        startPos[1] = player2.transform.position;
     }
 
     void Update()
@@ -132,10 +126,10 @@ public class MapManager : MonoBehaviour
         Player temp = player;
         player = player2;
         player2 = temp;
-        player.transform.position = startPos[player.index];
-        player2.transform.position = startPos[player.index];
         player.hasDrill = true;
-        player.hasDrill = false;
+        player2.hasDrill = false;
+        player.reset();
+        player2.reset();
         generateWorldInit();
     }
 }
