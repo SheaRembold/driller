@@ -4,7 +4,6 @@ using System.Collections;
 public class Player : MonoBehaviour
 {
     public int index;
-    KeyCode[][] keys = { new KeyCode[]{ KeyCode.A, KeyCode.D, KeyCode.S, KeyCode.W }, new KeyCode[]{ KeyCode.LeftArrow, KeyCode.RightArrow, KeyCode.DownArrow, KeyCode.UpArrow } };
     float rot = 0;
     float speed = 0;
     public float accel;
@@ -65,25 +64,25 @@ public class Player : MonoBehaviour
     {
         if (canMove)
         {
-            if (Input.GetKey(keys[index][0]))
+            if (Input.GetAxis("Horizontal" + index) < 0)
             {
                 rot += turn * Time.deltaTime;
                 if (rot > 360)
                     rot -= 360;
             }
-            if (Input.GetKey(keys[index][1]))
+            else if (Input.GetAxis("Horizontal" + index) > 0)
             {
                 rot -= turn * Time.deltaTime;
                 if (rot < 0)
                     rot += 360;
             }
-            if (Input.GetKey(keys[index][2]))
+            if (Input.GetAxis("Vertical" + index) < 0)
             {
                 speed -= brake * Time.deltaTime;
                 if (speed < 0)
                     speed = 0;
             }
-            if (Input.GetKey(keys[index][3]))
+            else if (Input.GetAxis("Vertical" + index) > 0)
             {
                 speed += accel * Time.deltaTime;
                 if (speed > maxSpeed)
