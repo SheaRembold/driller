@@ -3,9 +3,13 @@ using System.Collections;
 
 public class GUIStuff : MonoBehaviour
 {
+    public float timeLength = 60;
     float timeRemain;
     Rect timeRect;
     Rect winnerRect;
+    Rect[] playerRects;
+    Rect playerRect;
+    bool wait;
     bool winner;
     public MapManager map;
     string winnerText = string.Empty;
@@ -14,9 +18,12 @@ public class GUIStuff : MonoBehaviour
 
     void Start()
     {
-        timeRemain = 60;
-        timeRect = new Rect(Screen.width / 2f, 0, Screen.width / 2f, 100);
-        winnerRect = new Rect(Screen.width / 2f, Screen.height / 2f, Screen.width / 2f, 100);
+        timeRemain = timeLength;
+        timeRect = new Rect(0, 0, Screen.width, 100);
+        winnerRect = new Rect(0, Screen.height / 2f, Screen.width, 100);
+        playerRects = new Rect[2];
+        playerRects[0] = new Rect(0, Screen.height / 2f, Screen.width / 2f, 100);
+        playerRects[1] = new Rect(Screen.width / 2f, Screen.height / 2f, Screen.width / 2f, 100);
         winner = false;
     }
 
@@ -36,13 +43,18 @@ public class GUIStuff : MonoBehaviour
 
     void OnGUI()
     {
-        GUI.Label(timeRect, timeRemain.ToString(), style);
+        GUI.Label(timeRect, ((int)timeRemain).ToString(), style);
         if (winnerText != string.Empty)
             GUI.Label(winnerRect, winnerText, style);
+        if (wait)
+            GUI.Label(playerRect, "Waiting", style);
     }
 
     public void Winner(int index)
     {
+        if (winner)
+            return;
+
         winner = true;
         StartCoroutine(showWinner("Player " + (index + 1) + " caught Player " + ((index + 1) % 2 + 1)));
     }
@@ -56,6 +68,18 @@ public class GUIStuff : MonoBehaviour
         winnerText = string.Empty;
         map.reset();
         driller = (driller + 1) % 2;
+        timeRemain = timeLength;
         winner = false;
+    }
+
+    public void startWait(int pi)
+    {
+        playerRect = playerRects[pi];
+        wait = true;
+    }
+
+    public void endWait()
+    {
+        wait = false;
     }
 }

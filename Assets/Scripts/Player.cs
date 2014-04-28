@@ -10,7 +10,10 @@ public class Player : MonoBehaviour
     public float accel;
     public float brake;
     public float turn;
-    public float maxSpeed;
+    float maxSpeed;
+    public float maxSpeedChase;
+    public float maxSpeedDrill;
+    public float headStart;
     private bool _hasDrill;
     public bool hasDrill
     {
@@ -22,11 +25,18 @@ public class Player : MonoBehaviour
         {
             _hasDrill = value;
             drill.SetActive(_hasDrill);
+            if (_hasDrill)
+                maxSpeed = maxSpeedDrill;
+            else
+                maxSpeed = maxSpeedChase;
         }
     }
     public GameObject drill;
     public GUIStuff stuff;
     public MapManager map;
+
+    bool canMove;
+    float untilMove;
 
     Vector3 startPos;
 
@@ -34,6 +44,8 @@ public class Player : MonoBehaviour
     {
         hasDrill = index == 0;
         startPos = transform.position;
+
+        reset();
     }
 
     public void reset()
@@ -42,38 +54,56 @@ public class Player : MonoBehaviour
         rot = 0;
         transform.position = startPos;
         transform.rotation = Quaternion.Euler(0, 0, rot);
+
+        canMove = hasDrill;
+        untilMove = headStart;
+        if (!canMove)
+            stuff.startWait(index);
     }
 
     void Update()
     {
-        if (Input.GetKey(keys[index][0]))
+        if (canMove)
         {
-            rot += turn * Time.deltaTime;
-            if (rot > 360)
-                rot -= 360;
-        }
-        if (Input.GetKey(keys[index][1]))
-        {
-            rot -= turn * Time.deltaTime;
-            if (rot < 0)
-                rot += 360;
-        }
-        if (Input.GetKey(keys[index][2]))
-        {
-            speed -= brake * Time.deltaTime;
-            if (speed < 0)
-                speed = 0;
-        }
-        if (Input.GetKey(keys[index][3]))
-        {
-            speed += accel * Time.deltaTime;
-            if (speed > maxSpeed)
-                speed = maxSpeed;
-        }
+            if (Input.GetKey(keys[index][0]))
+            {
+                rot += turn * Time.deltaTime;
+                if (rot > 360)
+                    rot -= 360;
+            }
+            if (Input.GetKey(keys[index][1]))
+            {
+                rot -= turn * Time.deltaTime;
+                if (rot < 0)
+                    rot += 360;
+            }
+            if (Input.GetKey(keys[index][2]))
+            {
+                speed -= brake * Time.deltaTime;
+                if (speed < 0)
+                    speed = 0;
+            }
+            if (Input.GetKey(keys[index][3]))
+            {
+                speed += accel * Time.deltaTime;
+                if (speed > maxSpeed)
+                    speed = maxSpeed;
+            }
 
-        transform.rotation = Quaternion.Euler(0, 0, rot);
-        transform.position += transform.up * speed * Time.deltaTime;
-        rigidbody.velocity = Vector3.zero;
+            transform.rotation = Quaternion.Euler(0, 0, rot);
+            transform.position += transform.up * speed * Time.deltaTime;
+            rigidbody.velocity = Vector3.zero;
+            rigidbody.angularVelocity = Vector3.zero;
+        }
+        else
+        {
+            untilMove -= Time.deltaTime;
+            if (untilMove <= 0)
+            {
+                canMove = true;
+                stuff.endWait();
+            }
+        }
     }
 
     void OnCollisionEnter(Collision col)
@@ -82,7 +112,7 @@ public class Player : MonoBehaviour
         {
             map.Pool.Despawn(col.gameObject.transform);
         }
-        else if (col.gameObject.tag == "Player")
+        else if (col.gameObject.tag == "Player" && !hasDrill)
         {
             stuff.Winner(index);
         }
